@@ -1,0 +1,233 @@
+<style>#line_chart {  
+    height: 1px;
+     margin-top: opx;
+     margin-left: 25px; }
+
+         
+a:link {
+  text-decoration: none;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+
+#imgs{
+    
+    width: 200px;
+    height: 170px;
+    margin-top: 20px;
+    margin-left: 10px;
+  
+}
+#gg{
+    text-align: center;
+    color: coral;
+}
+#ggs{
+    text-align: center;
+    
+}
+.col-sm-6{
+    margin-top: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border-bottom: 1px solid #DDD;
+}
+
+
+tr:hover {background-color: #D6EEEE;}
+
+     </style>
+
+      <section class="content dashboard">
+            <div class="main-graph">
+                    <div class="row clearfix">
+                        <div class="col-xs-12 col-sm-6 col-md-8 col-lg-10 padding-0 overflow-hidden">
+                            <div class="graph-area">
+                                 <div id="line_chart"></div>
+                            </div> 
+                        </div>
+                      
+                    </div>
+                </div>
+                <!-- #END# Main Graph-->
+            <div class="page-heading">
+                <h1>Order Details</h1>
+                <ol class="breadcrumb">
+                    <li><a href="/public/index">Home</a></li>
+                    <li class="active">Details</li>
+                </ol>
+            </div>
+
+
+            <div class="panel panel-default">
+            
+                <div class="panel-heading"> </div>
+            
+                    <div class="panel-body">
+                       
+                        <div class="form-group">
+                              <div class="col-sm-12">
+                                <h3 id="gg">product order  Details</h3>  
+                                <table>
+                                    <tr>
+                                     <th>Image</th>   
+                                     <th>Product name</th>
+                                      <th>Price</th>
+                                      <th>Offer</th>
+                                      <th>Gst</th>
+                                      <th>Discount price</th>
+                                      <th>Delivery date</th>
+                                      <th>Items</th>
+                                      <th>Color</th>
+                                      <th>Size</th>
+                                      <th>Delivery charge</th>
+
+                                      
+    
+                                    </tr>
+                                    <tr>
+                                  <td> <img src="/uploads/<%=data[0].productId.images[0]%>"alt="img" id="imgs"></td> 
+                                      <td><%=data[0].productId.product_name %></td>
+                                      <td><%=data[0].productId.price %></td>
+                                      <td><%=data[0].productId.offer %></td>
+                                      <td><%=data[0].productId.gst %></td>
+                                      <td><%=data[0].productId.discount_price %></td>
+                                      <td><%=data[0].productId.delevery_time%></td>
+                                      <td><%=data[0].qty%></td>
+                                      <td><%=data[0].color%></td>
+                                      <td><%=data[0].size%></td>
+                                      <td><%=data[0].delevery_charge%></td>
+                                    </tr>
+                                   
+                                  </table>
+                                  
+                               
+                            </div>  
+                             
+                                <div class="col-sm-2">
+                                  <tr>
+                                    <th><b>PaymentMode</b><br></th>
+                                    </tr>
+
+                                    <tr>
+                                  <% for(var i=0; i < data.length; i++) { %>
+                                <td> <%=data[i].paymentMode %> </td> 
+
+                                 </tr><% } %>
+                                </div>
+
+
+                                <div class="col-sm-2">
+                                  <tr>
+                                    <th><b>Payment Result</b><br></th>
+                                    </tr>
+
+                                    <tr>
+                                  <% for(var i=0; i < data.length; i++) { %>
+                                <td> <%=data[i].isPaid %> </td> 
+
+                                 </tr><% } %>
+                                </div>
+
+
+                                <div class="col-sm-2">
+                                  <tr>
+                                    <th><b>Total Price</b><br></th>
+                                    </tr>
+
+                                    <tr>
+                                  <% for(var i=0; i < data.length; i++) { %>
+                                <td> <%=data[i].t_price%> </td> 
+
+                                 </tr><% } %>
+                                </div>
+
+
+                                <div class="col-sm-2">
+                                  <tr>
+                                    <th><b>Status</b><br></th>
+                                    </tr>
+
+                                    <tr>
+                                  <% for(var i=0; i < data.length; i++) { %>
+                                <td> <%=data[i].status%> </td>
+                                 
+
+                                 </tr><% } %>
+                                </div>
+
+
+
+                                <div class="col-sm-2">
+                                  <tr>
+                                    <th><b>update</b><br></th>
+                                    </tr>
+
+                                    <tr>
+                                  
+                                 <td><a href="/public/shipping_pollicy_update/<%=data[0].id%>" class="btn btn-primary"><i class="fa fa-edit">Edit</i></a></td> 
+
+                                 </tr>
+                                </div>
+
+
+                                  <!-- <h5 id="ggs">products details</h5>  
+                                  <table>
+                                   <tr>
+                                    <th>Total price</th>
+                                    <th>Payment mode</th>
+                                    <th><div class="col-sm-3">
+                                  <tr>
+                                    <th><b>PaymentMode</b><br></th>
+                                    </tr>
+
+                                    <tr>
+                                  <% for(var i=0; i < data.length; i++) { %>
+                                <td> <%=data[i].paymentMode %> </td> 
+
+                                 </tr><% } %>
+                                </div></th>
+                                    <th>order date</th>
+                                    <th>Delivery date</th>
+                                     <th>Status</th>
+                                     <th>Action</th>
+                                   </tr>
+  
+                                   <tr>
+                                      <% for(var i=0; i < data.length; i++) { %>
+  
+                                     <td><%=data[i].t_price %></td>
+                                     <td><%=data[i].paymentMode %></td>
+                                     <td><%=data[i].isPaid %></td>
+                                     <td><%=data[i].order_date %></td>
+                                     <td><%=data[i].deleverAt %></td>
+                                     <td><%=data[i].status %></td>
+                                     <td><a href="/public/shipping_pollicy_update/<%=data[i].id%>" class="btn btn-primary"><i class="fa fa-edit">Edit</i></a></td>
+                                    
+                                   </tr>
+                                   <% } %>
+                                
+                                  
+                                 </table>   -->
+                                
+                            </div> 
+
+                           
+
+
+                    </div>
+                </div>
+                <!-- #END# Task data -->
+            </div>
+        </section>
