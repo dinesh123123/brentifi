@@ -11,7 +11,7 @@ images:{
 },
   status: {
         type:String,
-        default:"pending",
+        default:"recevied",
        
     },
 

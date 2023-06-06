@@ -101,5 +101,12 @@ router.post("/active_deposite_list",userControllers.active_deposite_list_api);
 router.post("/close_order_list",userControllers.close_order);
 router.post("/add_payment",userControllers.Add_payment_api);
 router.post("/refund_amount",userControllers.refund_deposite_list_api);
+router.post("/give_rating",userControllers.Reviews_api);
+router.post("/views_list",userControllers.reviews_list);
+router.post("/extend_subscription",userControllers.subscription_request);
+router.get("/total_like_list",userControllers.total_like_list);
+router.get("/gst_list",userControllers.gst_list);
+router.get("/delivery_list",userControllers.delevery_list);
+
 
 module.exports=router;

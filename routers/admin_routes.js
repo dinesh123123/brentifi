@@ -3,7 +3,7 @@ const express=require("express");
 const router=express();
 const multer = require("multer");
 const adminControllers=require("../controllers/admin_controllers");
-
+const auth=require("../middlewere/admin_auth");
 
 
 // create storage
@@ -46,6 +46,8 @@ router.post("/contact_us",adminControllers.Contact_Us);
 router.post("/privacy_pollicy",adminControllers.Privacy_Pollicy);
 router.post("/term_condicition",adminControllers.Term_Condiction);
 router.post("/about_us",adminControllers.About_Us);
+router.get("/about_us",auth.isLogin,adminControllers.About_Uss);
+router.get("/about_us_delete/:id",auth.isLogin,adminControllers.aboutusDelete);
 router.post("/faq",adminControllers.Faqs);
 router.post("/create_category",upload.single('image'),adminControllers.Category_api);
 router.post("/create_banner",upload.single('image'),adminControllers.Banner_api);
@@ -59,6 +61,16 @@ router.post("/shipping_pollicy",adminControllers.Shippingpollicy);
 router.post("/refferal_term",adminControllers.Refferalterm);
 router.post("/rent_benifit",adminControllers.RentBenifit);
 router.post("/create_subcategory",upload.single('image'),adminControllers.Sub_Category_api);
-
+router.post("/admin_signup",auth.isLogin,adminControllers.admin_signup);
+router.get("/admin_signup",auth.isLogin,adminControllers.admin_signup_page);
+router.get("/admin_logout",auth.isLogout,adminControllers.AdminLogout);
+router.post("/create_gst",adminControllers.gst_api);
+router.post("/create_delivery",adminControllers.delivery_charge_api);
+router.get("/gst_list",auth.isLogin,adminControllers.gst_list);
+router.get("/delivery_list",auth.isLogin,adminControllers.delevery_list);
+router.get("/gst_update/:id",auth.isLogin,adminControllers.updategst);
+router.post("/gst_update/:id",adminControllers.Updategst);
+router.get("/delivery_update/:id",auth.isLogin,adminControllers.updatedelivery);
+router.post("/delivery_update/:id",adminControllers.Updatedelivery);
 
 module.exports=router;

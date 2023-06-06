@@ -30,6 +30,10 @@ ref:"product"
        
     },
 
+     unique: {
+        type:Number, 
+    },
+
      active: {
       type: Boolean,
       default: true

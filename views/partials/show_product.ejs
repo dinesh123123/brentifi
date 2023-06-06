@@ -53,14 +53,14 @@ a:visited {
                         <tr>
                         <th>S.No</th>
                         <th>Product name</th>
-                        <th>categoryName</th> 
+                        <th>Products</th> 
                         <th>Product type</th>
-                        <th>Image</th>
-                        <th>Price</th>
-                        <th>Rent Price</th>  
-                        <th>Discount price</th>
-                        <th>Discount rent price</th>
-                        <th>Offer</th>
+                        <th>Image</th>                       
+                        <th>New Product price</th>
+                        <th>Refurbished Product Price</th>                       
+                        <th>Security Deposit</th>
+                         <th>Prime Product Price (2,3,6,9,12/months)</th> 
+                         <th>Value Product Price  (2,3,6,9,12/months)</th> 
                         <th>Instock</th>             
                         <th>Action</th>
             </tr>
@@ -71,18 +71,18 @@ a:visited {
             <tr>
              <td><%= i+1%></td>
              <td><%=data[i].product_name%></td>
-            <td><%=data[i].category_name%></td>
+            <td><%=data[i].products%></td>
             <td><%=data[i].product_type%></td>
 
             <%  if(data[i].images.length>0){ %>
             <td><img src="/uploads/<%=data[i].images[0]%>"alt="cars"style="height:35px;weight:35px;">
                 <% } %>
             </td>
-            <td><%=data[i].price%></td>
-            <td><%=data[i].rent_price%></td>
-             <td><%=data[i].discount_price%></td>
-             <td><%=data[i].rent_discount_price%></td>
-             <td><%=data[i].offer%></td>
+             <td><%=data[i].selling_price%></td>
+             <td><%=data[i].rent_selling_price%></td>
+             <td><%=data[i].refund_pollicy%></td>
+              <td><b>Rs  </b>(<%=data[i].p_price2%> , <%=data[i].p_price3%>,  <%=data[i].p_price6%>, <%=data[i].p_price9%> ,<%=data[i].p_price12%>)</td>
+             <td><b>Rs  </b>(<%=data[i].v_price2%> , <%=data[i].v_price3%>,  <%=data[i].v_price6%>, <%=data[i].v_price9%> ,<%=data[i].v_price12%>)</td>
              <td><%=data[i].instock%></td>
            
      

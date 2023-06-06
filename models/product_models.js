@@ -19,9 +19,23 @@ text:{
 	type:String 
 },
 
+products:{
+	type:String 
+},
+
 price:{
 	type:String,
 },
+
+selling_price:{
+	type:String,
+},
+
+rent_selling_price:{
+	type:String,
+},
+
+
 rent_price:{
 	type:String,
 },
@@ -33,6 +47,46 @@ discount_price:{
 rent_discount_price:{
 	type:String,	
 },
+
+p_price2:{
+	type:String,
+},
+p_price3:{
+	type:String,
+},
+p_price4:{
+	type:String,
+},
+p_price6:{
+	type:String,
+},
+p_price9:{
+	type:String,
+},
+p_price12:{
+	type:String,
+},
+
+v_price2:{
+	type:String,
+},
+v_price3:{
+	type:String,
+},
+v_price4:{
+	type:String,
+},
+v_price6:{
+	type:String,
+},
+v_price9:{
+	type:String,
+},
+
+v_price12:{
+	type:String,
+},
+
 
 delevery_time:{
 	type:String,	
@@ -56,13 +110,6 @@ description:{
 		type:String,
 	},
 
-/*image:{
-	type:String,
-	},
-  
-	general_info:{
-		type:String,
-	},*/
 	dimensions:{
 		type:String,
 	},
@@ -86,8 +133,6 @@ description:{
 tenures_availabe:[],
 size:[],
 color:[],
-// userId:[{type:mongoose.Schema.Types.ObjectId,
-// 		ref:"like"},],
 
 
 offer:{

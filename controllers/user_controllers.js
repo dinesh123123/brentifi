@@ -24,8 +24,11 @@ const Sub_Category=require("../models/sub_category_models");
 const Order_summery=require("../models/order_summery_models");
 const Order=require("../models/order_product_models");
 const Kyc=require("../models/kyc_models");
+const Review=require("../models/reviews_models");
 const Payment=require("../models/payment_models");
 const nodemailer = require("nodemailer");
+const Gst=require("../models/gst_models");
+const Delivery=require("../models/d_charge_models");
 
 
 
@@ -292,6 +295,8 @@ res.send({result:"false",message:"You are allready login"})
     })
   }     
 };
+
+
 
 
 //  create about list api for app side
@@ -712,6 +717,7 @@ const ProductDetails=async(req,res)=>{
     const products= await Product.findOne({"_id":productId});
    res.send({result:"true", message: "your list are.",
    path:"http://103.104.74.215:3008/uploads/",data:products}) 
+   
    } 
     }catch(error){
         console.log(error.message)
@@ -1136,7 +1142,7 @@ const UserDetails=async(req,res)=>{
 // create  add  cart api 
 const AddCart_api=async(req,res)=>{
     //const {userId,delevery_charge,total_price,items,discount,productId,color,size,qty,duration,orderItems}=req.body;
-    const {userId,delevery_charge,total_price,productId,color,size,qty,duration}=req.body;
+    const {unique,userId,delevery_charge,total_price,productId,color,size,qty,duration}=req.body;
     
 try{
     const Rauniyar=await Cart.findOne({"userId":userId,"productId":productId,status:"pending"});
@@ -1492,6 +1498,7 @@ if(cartId){
 };
 
 
+
 // create address list api
 const Address_list=async(req,res)=>{
     const {userId}=req.body;
@@ -1631,16 +1638,18 @@ const ordersummery_list=async(req,res)=>{
 
 
 
+
 // create oder product api
 const OrderProduct=async(req,res)=>{
     try{
+    const ram = Math.floor(100000 + Math.random() * 900000);
 
-    //const{userId,cartId,ShippingAddressId,total_price,shipping_price,isPaid,PaidAt,deleverAt,tax_price,paymentMode,paymentMethod,status}=req.body;
-    const{userId,ShippingAddressId,t_price,shipping_price,isPaid,PaidAt,deleverAt,tax_price,paymentMode,paymentMethod,status}=req.body;
+    const{random_number,types,userId,ShippingAddressId,t_price,shipping_price,isPaid,PaidAt,deleverAt,tax_price,paymentMode,paymentMethod,status,duration}=req.body;
 
      if(userId && t_price){
 
-    const order=new Order({userId,ShippingAddressId,t_price,shipping_price,isPaid,PaidAt,deleverAt,tax_price,paymentMode,paymentMethod,status,
+
+    const order=new Order({random_number:ram,types,userId,ShippingAddressId,t_price,shipping_price,isPaid,PaidAt,deleverAt,tax_price,paymentMode,paymentMethod,status,duration,
     
     paymentResult:{
     id:req.body.id,
@@ -1653,13 +1662,25 @@ const OrderProduct=async(req,res)=>{
 });
     const data= await order.save();
     
-
-    const updatedata=await Cart.find({"userId":userId}).populate('productId');
-    console.log(updatedata)
+// update status
+    const updatedata=await Cart.find({"userId":userId,status:"pending"}).populate('productId');
+   
 for(i=0;i<updatedata.length;i++){
     const cart_id=updatedata[i]._id;
        if(cart_id){
-        const radha=await Cart.findOneAndUpdate({"_id":cart_id},{$set:{status:"placed"}},{new:true});
+        const radha=await Cart.findOneAndUpdate({"_id":cart_id},{$set:{status:"placed",unique:ram}},{new:true});
+       }
+}
+
+//update instock
+    const qtyupdate=await Cart.find({"userId":userId,status:"pending"}).populate('productId');
+    for(i=0;i<updatedata.length;i++){
+    const quantity=updatedata[i].qty;
+    const quantitys=updatedata[i].productId.instock;
+    const product_Id=updatedata[i].productId._id;
+       if(product_Id){
+         const abs=Number(quantitys-quantity)
+        const qtys=await Product.findOneAndUpdate({"_id":product_Id},{$set:{instock:abs}},{new:true});
        }
 }
 
@@ -1674,6 +1695,7 @@ for(i=0;i<updatedata.length;i++){
 }
 
 };
+
 
 
 
@@ -2014,6 +2036,164 @@ else{
 
 
 
+
+// create user reviews api
+const Reviews_api=async(req,res)=>{
+    const {productId,userId,ratings,comment,name}=req.body;
+    try{
+        if(userId && productId){
+    
+        const rating=new Review ({ratings,comment,userId,productId,name});
+        const data=await rating.save();
+        res.status(200).json({result:"true",message:"data sucessfully",data:data});
+
+    
+}else{
+     res.status(400).json({result:"false",message:"required parameters are userId,productId,ratings,comment,name"});
+}
+} catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+
+
+
+// create review list api
+const reviews_list=async(req,res)=>{
+    const {productId}=req.body;
+    try{
+        if(!productId){
+            res.status(400).json({result:"false",message:"parameter required productId"});
+            }else{ 
+    const products= await Review.find({productId},{_id:0,createdAt:0,updatedAt:0});
+   
+   res.send({result:"true", message: "your list are.",
+   path:"https://admin.krazeal.com/uploads/",data:products}) 
+   } 
+    }catch(error){
+        console.log(error.message)
+    res.status(400).json({result:"false",message:" get some error",msg:error.message})
+}
+
+};
+
+
+
+
+
+//create extend subscription  api on gmail
+const subscription_request=async(req,res)=>{
+    const {orderId,message}=req.body;
+    try{
+        if(orderId && message){
+          var transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'dinuthecoder@gmail.com',
+                pass: 'eqisxmvaunwenvml'
+            }
+        });
+
+        var mailOptions = {
+            from: 'dinuthecoder@gmail.com',
+            to:'vranjanhit@gmail.com',
+            subject: "Extend subscription request",
+            html: "<h4>orderId:"+orderId+"</h4><h4>message: "+message+"</h4>"
+        }
+         
+        transporter.sendMail(mailOptions, function(err, result){
+            if(err) {
+                res.json({
+                    result:'false',
+                    msg: 'email does not exist..',
+                })
+            }
+            else{
+                res.json({
+                    result: 'true',
+                    message :'password send successfully your email address please check your email..',
+                    orderId:orderId,
+                    message:message,
+                   
+                })
+            }
+        })//end here email operation
+    }else{
+       res.status(400).json({result:"false",message:"required parameters are orderId,message"}) 
+    }
+
+    }catch(error){
+        res.status(400).json({result:"false",message:error.message})
+    }
+};
+
+
+
+
+// create like list api 
+const total_like_list=async(req,res)=>{
+    try{
+    const data=await Product.aggregate([     
+   {
+      $lookup:
+       {
+          from: "likes",
+          localField: "_id",
+         foreignField: "productId", 
+        as: "dinu"
+       }
+     
+}])
+
+  
+
+    res.status(200).json({result:"true",message:"required list are",data:data});
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+}
+};
+
+
+
+
+
+// create gst list api
+const gst_list=async(req,res)=>{
+    try{     
+    const products= await Gst.find({},{_id:0,__v:0,});
+   
+   res.send({result:"true", message: "your list are.",
+   path:"https://admin.krazeal.com/uploads/",data:products})  
+    }catch(error){
+      
+    res.status(400).json({result:"false",message:" get some error",msg:error.message})
+}
+
+};
+
+
+
+
+// create delivery list api
+const delevery_list=async(req,res)=>{
+    try{     
+    const products= await Delivery.find({},{_id:0,__v:0,});
+   res.send({result:"true", message: "your list are.",
+   path:"https://admin.krazeal.com/uploads/",data:products})  
+    }catch(error){
+      
+    res.status(400).json({result:"false",message:" get some error",msg:error.message})
+}
+
+};
+
+
+
+
+
 module.exports ={
 User_Signup,
 User_Login,
@@ -2072,6 +2252,12 @@ close_order,
 Add_payment_api,
 Total_deposite_list_api,
 active_deposite_list_api,
-refund_deposite_list_api
+refund_deposite_list_api,
+Reviews_api,
+reviews_list,
+subscription_request,
+total_like_list,
+delevery_list,
+gst_list
 
 };

@@ -20,6 +20,8 @@ const Sub_Category=require("../models/sub_category_models");
 const Rent_benifit=require("../models/rent_benifit_models");
 const Cart=require("../models/cart_models");
 const Order=require("../models/order_product_models");
+const Kyc=require("../models/kyc_models");
+const Admin=require("../models/admin_models");
 
 
 
@@ -30,10 +32,22 @@ const IndexPage=async(req,res)=>{
     const a={usercount};
     const productcount=await Product.count();
     const b={productcount};
-    const categorycount=await Category.count();
+    const categorycount=await Order.count();
     const c={categorycount};
-    const subcategorycount=await Sub_Category.count();
-    const d={subcategorycount};
+
+
+//find total deposit price or amount
+ const datas=await Order.find({types:"Buy"});
+
+ //apply for loop
+ var total_amount=0;
+ for(let i=0;i<datas.length;i++){
+  total_amount +=Number((datas[i].t_price));
+ 
+ }
+
+
+    const d={total_amount};  
     const data=[a,b,c,d];
 
 	res.render("index",{data:data});
@@ -554,10 +568,11 @@ try{
 const AdminSignin=async(req,res)=>{
      try{
       const {email,password}=req.body;
-      const user= await User.findOne({email:email,password:password});
+      const user= await Admin.findOne({email:email,password:password});
       if (user) {
-    if(user.is_user === 0){
+    if(user.is_admin === 0){
         res.render("login",{message:"email and Password incorrect"});
+       // res.redirect('/public/index');
     }else{
         req.session.user_id=user._id;
         console.log(req.session)
@@ -575,6 +590,36 @@ const AdminSignin=async(req,res)=>{
 
 };
 
+
+
+/*
+//create Admin signin api
+const AdminSignin=async(req,res)=>{
+     try{
+      const {email,password}=req.body;
+      const user= await Admin.findOne({email:email,password:password});
+      if (user) {
+    if(user.is_admin === 0){
+         req.session.admin_id=user._id;
+        res.redirect('/public/index');
+    }else{
+        req.session.user_id=user._id;
+        console.log(req.session)
+        res.redirect('/public/index');
+    }
+  }
+      else{
+  res.render('login',{message:"email and Password incorrect"});
+
+ }
+   
+   }catch(error){
+           console.log(error.message)
+    }  
+
+};
+
+*/
 
 
 // create user logout api
@@ -602,6 +647,26 @@ try{
   }     
 
 };
+
+
+
+// create inventory list product list api
+const inventorylist=async(req,res)=>{
+try{
+    const data = await Product.find({});
+    if(data != null){
+        res.status(200).render("inventory",{result:"true",message:"all data lists are",data:data})
+    }else{
+        res.status(400).json({result:"false",message:" data does not found"})
+    }
+    
+    }catch(error){
+        console.log(error.message)
+       res.status(402).send({result:"false",message:"get some error",msg:error.message})
+  }     
+
+};
+
 
 
 //Product indexpage api
@@ -655,19 +720,32 @@ try{
         try{
 
 
-         const arrayImage=["front","right","left","back","about"];
+         const arrayImage=[];
         for(let i=0;i<req.files.length;i++){
           arrayImage[i]=req.files[i].filename;
       }
 
 
- const{product_name,product_type,title,text,rent_price,price,discount_price,rent_discount_price,delevery_time,refund_pollicy,
+ const{gst,d_charge,v_price2,v_price3,v_price4,v_price6,v_price9,v_price12,p_price2,p_price3,p_price4,p_price6,p_price9,p_price12,product_name,product_type,title,text,rent_price,price,discount_price,rent_discount_price,delevery_time,refund_pollicy,
                 instock,dimensions,type_product,type_of_finish,like,offer,height,width,length,description}=req.body;
             const dinesh=await Product.findOne({"_id":id});
             if(dinesh){
-                if(req.file){
+                if(arrayImage.length>0){
                     var datarecord={
-
+                     v_price2,
+                     v_price3,
+                     v_price4,
+                     v_price6,
+                     v_price9,
+                     v_price12,
+                     p_price2,
+                     p_price3,
+                     p_price4,
+                     p_price6,
+                     p_price9,
+                     p_price12,
+                     gst,
+                     d_charge,
                         product_name:product_name,
                         product_type:product_type,
                         title:title,
@@ -711,7 +789,22 @@ try{
                         width:width,
                         length: length,
                         description:description,
+                        v_price2,
+                        v_price3,
+                        v_price4,
+                        v_price6,
+                        v_price9,
+                        v_price12,
+                        p_price2,
+                        p_price3,
+                        p_price4,
+                        p_price6,
+                        p_price9,
+                        p_price12,
+                         gst,
+                     d_charge,
                 }
+
             }
             
 
@@ -730,6 +823,46 @@ res.status(200).redirect("/public/product_list");
         }
 
     };
+
+
+
+
+//update inventoru tab
+    const updateinstock=async(req,res)=>{
+        try{
+        
+    const result= await Product.findById(req.params.id);
+    res.status(200).render('edit_instock',{data:result});
+
+    }catch(error){
+        res.status(400).json({ message:error.message})
+    }  
+
+    };
+
+
+
+
+// inventory  instok updates using post method
+    const Updateinstock=async(req,res)=>{
+        const id=req.params.id;
+        try{
+ const{instock}=req.body;
+
+const data=await Product.findByIdAndUpdate({"_id":id},{$set:{instock:instock}},{new:true});
+res.status(200).redirect("/public/inventoryTab");
+        }catch(error){
+            res.status(400).json({result:"true",message:error.message});
+        }
+
+    };
+
+
+
+// end inventory tab
+
+
+
 
 
 // producyt operations end here
@@ -1226,24 +1359,39 @@ const Updatefeatures=async(req,res)=>{
 
 // create order details api
 const orderDetails=async(req,res)=>{
-    const id=req.params.id;
-    try{
+//     const id=req.params.id;
+//     try{
         
     
-    const dinesh=await Order.find({"_id":id}).populate('ShippingAddressId');
-    const abcd=dinesh[0].userId;
+//     const dinesh=await Order.find({"_id":id}).populate('ShippingAddressId');
+//     const abcd=dinesh[0].userId;
     
-    const list=await Cart.find({"userId":abcd}).populate('productId').populate('userId');
+//     const list=await Cart.find({"userId":abcd}).populate('productId').populate('userId');
 
-   const data=[...list, ...dinesh ];
-console.log(data)
-    res.status(200).render('order_details',{result:"true",message:"required list are",data:data});
+//    const data=[...list, ...dinesh ];
+// console.log(data)
+//     res.status(200).render('order_details',{result:"true",message:"required list are",data:data});
+
+// }catch(error){
+//     res.status(400).json({result:"false",message:error.message});
+
+//  }
+
+
+ const id=req.params.id;
+    try{
+   const dinesh=await Order.find({"_id":id});
+   const dinu= dinesh[0].random_number;    
+  const list=await Cart.find({unique:dinu}).populate('productId').populate('userId');
+    res.status(200).render('order_details',{result:"true",message:"required list are",data:list});
 
 }catch(error){
     res.status(400).json({result:"false",message:error.message});
 
  }
-};
+
+
+ };
 
 
 
@@ -1252,8 +1400,8 @@ console.log(data)
 // create buy order details api
 const orderlist_api=async(req,res)=>{
     try{
-    const dinesh=await Order.find({}).populate('userId').populate('ShippingAddressId');
-    console.log(dinesh)
+    const dinesh=await Order.find({types:"Buy"}).populate('ShippingAddressId');
+   
     res.status(200).render('order',{result:"true",message:"required list are",data:dinesh});
 }catch(error){
     res.status(400).json({result:"false",message:error.message});
@@ -1267,13 +1415,213 @@ const orderlist_api=async(req,res)=>{
 const rentorderlist_api=async(req,res)=>{
     try{
     //const dinesh=await Cart.find({duration:{$ne:""}}).populate(userId);
-    const dinesh=await Order.find({}).populate('userId').populate('ShippingAddressId');
+    const dinesh=await Order.find({types:"Rent"}).populate('userId').populate('ShippingAddressId');
     res.status(200).render('rentorder.ejs',{result:"true",message:"required list are",data:dinesh});
 }catch(error){
     res.status(400).json({result:"false",message:error.message});
 
  }
 };
+
+
+
+// create order details api
+const RentorderDetails=async(req,res)=>{
+ const id=req.params.id;
+    try{
+   const dinesh=await Order.find({"_id":id});
+   const dinu= dinesh[0].random_number;    
+  const list=await Cart.find({unique:dinu}).populate('productId').populate('userId');
+    res.status(200).render('rentorder_details',{result:"true",message:"required list are",data:list});
+
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+
+ };
+
+
+
+
+
+// create kyc verificaation list api
+const kyc_api_list=async(req,res)=>{
+    try{
+   
+    const dinesh=await Kyc.find({}).populate('userId');
+    res.status(200).render('kyc',{result:"true",message:"required list are",data:dinesh});
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+
+
+// create kyc details a page
+const kyc_api_details=async(req,res)=>{
+     const id=req.params.id;
+    try{
+   
+    const dinesh=await Kyc.find({"_id":id})
+    res.status(200).render('kyc_details',{result:"true",message:"required list are",data:dinesh});
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+
+// create kyc update api
+const kyc_api_update=async(req,res)=>{
+     const id=req.params.id;
+     const {status}=req.body;
+    try{
+   
+    const dinesh=await Kyc.findOneAndUpdate({"_id":id},{$set:{status:status}},{new:true});
+    res.status(200).redirect("/public/kyc_varification")
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+// create edit term and condiction api
+const kyc_api_updates=async(req,res)=>{
+    const id=req.params.id;
+    try{
+    const data=await Kyc.findById({"_id":id});
+     res.status(200).render('edit_kyc',{data:data});
+}catch(error){
+        res.status(400).json({ message:error.message})
+     }  
+};
+
+
+
+
+// create order status  update api
+const orders_update=async(req,res)=>{
+     const id=req.params.id;
+     const {status}=req.body;
+    try{
+   
+    const dinesh=await Order.findOneAndUpdate({"_id":id},{$set:{status:status}},{new:true});
+    res.status(200).redirect("/public/order_list")
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+// create edit term and condiction api
+const orders_updates=async(req,res)=>{
+    const id=req.params.id;
+    try{
+    const data=await Order.findById({"_id":id});
+     res.status(200).render('orders_status',{data:data});
+}catch(error){
+        res.status(400).json({ message:error.message})
+     }  
+};
+
+
+// Rent orders update
+
+// create order status  update api
+const rentorders_update=async(req,res)=>{
+     const id=req.params.id;
+     const {status}=req.body;
+    try{
+   
+    const dinesh=await Order.findOneAndUpdate({"_id":id},{$set:{status:status}},{new:true});
+    res.status(200).redirect("/public/rentOrder_list")
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+// create edit term and condiction api
+const rentorders_updates=async(req,res)=>{
+    const id=req.params.id;
+    try{
+    const data=await Order.findById({"_id":id});
+     res.status(200).render('rent_orders_status',{data:data});
+}catch(error){
+        res.status(400).json({ message:error.message})
+     }  
+};
+
+
+// end rent orders
+
+
+
+// create Cart  status  update api
+const carts_update=async(req,res)=>{
+     const id=req.params.id;
+     const {status}=req.body;
+    try{
+   
+    const dinesh=await Cart.findOneAndUpdate({"_id":id},{$set:{status:status}},{new:true});
+    res.status(200).redirect("/public/order_details/:id")
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+
+
+// create edit term and condiction api
+const carts_updates=async(req,res)=>{
+    const id=req.params.id;
+    try{
+    const data=await Cart.findById({"_id":id});
+     res.status(200).render('orders_status',{data:data});
+}catch(error){
+        res.status(400).json({ message:error.message})
+     }  
+};
+
+
+
+
+// create rent carts status update api
+const rentcarts_update=async(req,res)=>{
+     const id=req.params.id;
+     const {status}=req.body;
+    try{
+   
+    const dinesh=await Cart.findOneAndUpdate({"_id":id},{$set:{status:status}},{new:true});
+    res.status(200).redirect("/public/rentorder_details/:id")
+}catch(error){
+    res.status(400).json({result:"false",message:error.message});
+
+ }
+
+};
+
+// create edit term and condiction api
+const rentcarts_updates=async(req,res)=>{
+    const id=req.params.id;
+    try{
+    const data=await Cart.findById({"_id":id});
+     res.status(200).render('rentorders_status',{data:data});
+}catch(error){
+        res.status(400).json({ message:error.message})
+     }  
+};
+
 
 
 
@@ -1340,7 +1688,7 @@ module.exports={
      faqlist,
     updatefaq,
     Updatefaq,
- rentBenifiteslist,
+    rentBenifiteslist,
     updaterentBenifites,
     UpdaterentBenifites,
     refferallist,
@@ -1354,7 +1702,23 @@ module.exports={
     Updatefeatures,
     orderDetails,
     orderlist_api,
-    rentorderlist_api
+    rentorderlist_api,
+    kyc_api_list,
+    kyc_api_details,
+    kyc_api_update,
+    kyc_api_updates,
+    orders_update,
+    orders_updates,
+    carts_update,
+    carts_updates,
+    RentorderDetails,
+    inventorylist,
+    updateinstock,
+    Updateinstock,
+    rentorders_update,
+    rentorders_updates,
+    rentcarts_update,
+    rentcarts_updates,
 
 
 

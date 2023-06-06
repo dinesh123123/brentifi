@@ -6,22 +6,6 @@ const orderSchema=new mongoose.Schema({
         ref: "user",
     },
 
-// orderItems:[
-// {
-	
-// 	qty:{type:Number,required:false},
-// 	productId:{
-// 	type:mongoose.Schema.Types.ObjectId,
-// required:false,
-// ref:"product"
-// },
-// },
-// ],
-
-cartId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "cart",
-    },
 
 
 ShippingAddressId:{
@@ -49,11 +33,18 @@ paymentResult:{
    email_address:{type:String},
 },
 
-tax_price:{
+random_number:{
 	type:Number,
-	required:false,
-	default:0
+	required:true,
+	
 },
+
+types:{
+	type:String,
+	required:false,
+	
+},
+
 
 shipping_price:{
 	type:Number,
@@ -80,7 +71,7 @@ deleverAt:{
 },
 status:{
 	type:String,
-default:"pending"
+default:"New"
 },	
 
 order_date:{
@@ -91,3 +82,5 @@ default:Date ()},
 },{timestamps:true});
 
 module.exports=orderModel=mongoose.model('order',orderSchema);
+
+
